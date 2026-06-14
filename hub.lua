@@ -10,6 +10,28 @@ local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+-- FINAL LOADER SCRIPT (execute this in exploit)
+_G.SCRIPT_URL = "https://raw.githubusercontent.com/xas14820-arch/hub.lua/refs/heads/main/hub.lua" -- ← Set your URL here
+
+local function fetch()
+    return game:HttpGetAsync(_G.SCRIPT_URL, true) 
+end
+
+local function execute()
+    local script = fetch()
+    if not script then return end
+    loadstring(script)()
+end
+
+-- Auto-reinject
+if syn and syn.queue_on_teleport then
+    syn.queue_on_teleport([[
+        loadstring(game:HttpGet("]] .. _G.SCRIPT_URL .. [["))()
+    ]])
+end
+
+execute()
+
 -- ESP Config
 local espEnabled = false
 local espObjects = {}
@@ -600,7 +622,7 @@ local function startFly()
 
     flyBody = Instance.new("BodyVelocity")
     flyBody.Velocity = Vector3.new(0,0,0)
-    flyBody.MaxForce = Vector3.new(1e5,1e5,1e5)
+    flyBody.MaxForce = Vector3.new(100000,100000,100000)
     flyBody.Parent = hrp
 
     flyConnection = RunService.Heartbeat:Connect(function()
@@ -876,15 +898,6 @@ tab4:CreateToggle("FOV Circle", function(a)
     fovCircleEnabled = a
     if fovCircleEnabled then createFOVCircle() notify("FOV Circle on")
     else removeFOVCircle() notify("FOV Circle off") end
-end)
-
-tab4:CreateToggle("Notifications", function(a)
-    notifsEnabled = a
-end)
-
-tab4:CreateToggle("Kill Notifications", function(a)
-    notifsEnabled = a
-    notify("Kill Notifs " .. (a and "on" or "off"))
 end)
 
 -- Input
